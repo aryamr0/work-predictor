@@ -1,5 +1,6 @@
 
 import joblib
+import numpy as np
 import streamlit as st
 
 model = joblib.load('work_model.pkl')
@@ -13,7 +14,19 @@ hours_per_week = st.number_input(
 )
 
 if st.button('Predict'):
-  input_data = [[age, hours_per_week]]
-  prediction = model.predict(input_data)
+  try:
+    n_features = getattr(model, 'n_features_in_', 2)
 
-  st.success(f'Result: Predicted Work Arrangement is **{prediction[0]}**')
+    input_data = [age, hours_per_week]
+    if n_features > 2:
+      input_data = input_data + [0] * (n_features - 2)
+    elif n_features == 1:
+      input_data = [age]
+
+    input_array = np.array([input_data])
+
+    prediction = model.predict(input_array)
+    st.success(f'Result: Predicted Work Arrangement is **{prediction[0]}**')
+
+  except Exception as e:
+    st.error(f'حدث خطأ أثناء التنبؤ: {e}')
