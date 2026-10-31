@@ -1,4 +1,5 @@
 import joblib
+import pandas as pd
 import streamlit as st
 
 model = joblib.load('work_model.pkl')
@@ -12,7 +13,9 @@ hours_per_week = st.number_input(
 )
 
 if st.button('Predict'):
-  input_data = [[age, hours_per_week]]
-  prediction = model.predict(input_data)
+  input_data = pd.DataFrame(
+      [[age, hours_per_week]], columns=['Age', 'Hours_Per_Week']
+  )
 
+  prediction = model.predict(input_data)
   st.success(f'Result: Predicted Work Arrangement is **{prediction[0]}**')
